@@ -7,7 +7,7 @@ import java.text.NumberFormat
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,25 +16,27 @@ class MainActivity : AppCompatActivity() {
         binding.calculateButton.setOnClickListener { calculateTip() }
     }
 
-    fun calculateTip(){
+    private fun calculateTip(){
         val stringInTextField = binding.costOfService.text.toString()
         if(stringInTextField.isEmpty()){
-            binding.tipResult.text = "Please enter cost of service"
+            binding.tipResult.text = getString(R.string.no_cost_entered)
         }else {
             val cost = stringInTextField.toDouble()
-            val selectedId = binding.tipOptions.checkedRadioButtonId
-            val tipPercentage = when (selectedId) {
+            val tipPercentage = when (binding.tipOptions.checkedRadioButtonId) {
                 R.id.option_twenty_percent -> 0.20
                 R.id.option_eighteen_percent -> 0.18
                 else -> 0.15
             }
             var tip = tipPercentage * cost
-            val roundUp = binding.roundUpSwitch.isChecked
-            if (roundUp) {
+            if (binding.roundUpSwitch.isChecked) {
                 tip = kotlin.math.ceil(tip)
             }
-            val formattedTip = NumberFormat.getCurrencyInstance().format(tip)
-            binding.tipResult.text = getString(R.string.tip_result, formattedTip)
+            displayTip(tip)
         }
+    }
+
+    private fun displayTip(tip: Double){
+        val formattedTip = NumberFormat.getCurrencyInstance().format(tip)
+        binding.tipResult.text = getString(R.string.tip_result, formattedTip)
     }
 }
